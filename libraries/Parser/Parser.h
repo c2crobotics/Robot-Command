@@ -1,7 +1,8 @@
 #ifndef PARSER_H
 #define PARSER_H
-
 #include <Arduino.h>
+
+extern const String COLORS[];
 
 struct Command {
   String name;
@@ -14,5 +15,6 @@ struct Command {
 String trim(const String& str);
 Command getCommand(const String& input);
 bool isValidInt(const String& str, int minVal, int maxVal);
+bool isValidColor(const String& str);
 
 #endif

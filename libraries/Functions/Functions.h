@@ -16,4 +16,7 @@ void print_list();
 void clear_list();
 void printHelp();
 
+// Setup functions
+void setupLEDs();
+
 #endif

@@ -62,7 +62,7 @@ void processCommands() {
     }
   } else if (cmd.name == "set_speed") {
     if (cmd.paramCount != 1) error = "set_speed requires 1 parameter";
-    else if (!isValidInt(cmd.params[0], -100, 100)) error = "Invalid value (-100 to 100)";
+    else if (!isValidInt(cmd.params[0], 0, 255)) error = "Invalid value (0 to 255)";
     else {
       shouldStore = true;
     }

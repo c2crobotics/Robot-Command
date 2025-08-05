@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "EEPROM_Manager.h"
+#include "Motor.h"
 
 // Command implementations
 void move_forward(int seconds);
@@ -18,5 +19,6 @@ void printHelp();
 
 // Setup functions
 void setupLEDs();
+void setupMotors();
 
 #endif

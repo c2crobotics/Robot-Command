@@ -1,6 +1,12 @@
 #include "Functions.h"
+#include "Motor.h"
 
 // Setup functions
+
+// Setup Motors
+const int DUMMY_PIN = -1;
+Motor leftMotor(DUMMY_PIN, DUMMY_PIN, DUMMY_PIN);
+Motor rightMotor(DUMMY_PIN, DUMMY_PIN, DUMMY_PIN);
 
 const int NUM_LEDS = 2;
 const int RGB_CHANNELS = 3;
@@ -37,6 +43,13 @@ const ColorMap COLOR_MAP[] = {
 
 const int COLOR_COUNT = sizeof(COLOR_MAP) / sizeof(ColorMap);
 
+// Initialize Motor pins
+void setupMotors()
+{
+  leftMotor.init();
+  rightMotor.init();
+}
+
 // Initialize LED pins
 void setupLEDs()
 {
@@ -45,7 +58,7 @@ void setupLEDs()
     for (int channel = 0; channel < RGB_CHANNELS; channel++)
     {
       pinMode(LED_PINS[led][channel], OUTPUT);
-      analogWrite(LED_PINS[led][channel], 0);
+      digitalWrite(LED_PINS[led][channel], 0);
     }
   }
 }
@@ -57,6 +70,20 @@ void move_forward(int seconds)
   Serial.print(F("Robot moving forward for "));
   Serial.print(seconds);
   Serial.println(F(" seconds"));
+
+  leftMotor.forward();
+  rightMotor.forward();
+  set_led_color("green", 0);
+  set_led_color("green", 1);
+  
+  delay(seconds * 100);
+  
+  leftMotor.stop();
+  rightMotor.stop();
+  
+  set_led_color("off", 1);
+  set_led_color("off", 0);
+  // LED Test
 }
 
 void move_backward(int seconds)
@@ -64,6 +91,21 @@ void move_backward(int seconds)
   Serial.print(F("Robot moving backward for "));
   Serial.print(seconds);
   Serial.println(F(" seconds"));
+
+  leftMotor.backward();
+  rightMotor.backward();
+  set_led_color("red", 0);
+  set_led_color("red", 1);
+  
+  delay(seconds * 100);
+  
+  leftMotor.stop();
+  rightMotor.stop();
+
+  set_led_color("off", 0);
+  set_led_color("off", 1);
+
+  // LED Test
 }
 
 void turn_right(int degrees)
@@ -71,6 +113,20 @@ void turn_right(int degrees)
   Serial.print(F("Robot turning "));
   Serial.print(degrees);
   Serial.println(F(" degrees right"));
+
+  leftMotor.forward();
+  rightMotor.backward();
+
+  set_led_color("red", 0);
+  set_led_color("green", 1);
+  
+  delay(degrees * 10);
+  
+  leftMotor.stop();
+  rightMotor.stop();
+
+  set_led_color("off", 0);
+  set_led_color("off", 1);
 }
 
 void turn_left(int degrees)
@@ -78,12 +134,36 @@ void turn_left(int degrees)
   Serial.print(F("Robot turning "));
   Serial.print(degrees);
   Serial.println(F(" degrees left"));
+
+  leftMotor.backward();
+  rightMotor.forward();
+
+  set_led_color("green", 0);
+  set_led_color("red", 1);
+  
+  delay(degrees * 10);
+
+  leftMotor.stop();
+  rightMotor.stop();
+
+  set_led_color("off", 0);
+  set_led_color("off", 1);
 }
 
 void set_speed(int speed)
 {
   Serial.print(F("Setting robot speed to: "));
   Serial.println(speed);
+
+  leftMotor.setSpeed(speed);
+  rightMotor.setSpeed(speed);
+
+  set_led_color("pink", 0);
+  set_led_color("pink", 1);
+  delay(2000);
+  set_led_color("off", 0);
+  set_led_color("off", 1);
+
 }
 
 void set_led_color(String color, int led)
@@ -95,7 +175,7 @@ void set_led_color(String color, int led)
     {
       for (int channel = 0; channel < RGB_CHANNELS; channel++)
       {
-        analogWrite(LED_PINS[i][channel], 0);
+        digitalWrite(LED_PINS[i][channel], 0);
       }
     }
     return;
@@ -107,9 +187,9 @@ void set_led_color(String color, int led)
   {
     if (color.equals(COLOR_MAP[i].name))
     {
-      analogWrite(LED_PINS[led][0], COLOR_MAP[i].red);
-      analogWrite(LED_PINS[led][1], COLOR_MAP[i].green);
-      analogWrite(LED_PINS[led][2], COLOR_MAP[i].blue);
+      digitalWrite(LED_PINS[led][0], COLOR_MAP[i].red);
+      digitalWrite(LED_PINS[led][1], COLOR_MAP[i].green);
+      digitalWrite(LED_PINS[led][2], COLOR_MAP[i].blue);
 
       colorFound = true;
       Serial.print("Set LED ");
@@ -124,9 +204,9 @@ void set_led_color(String color, int led)
   if (!colorFound)
   {
     // Default to black for unknown colors
-    analogWrite(LED_PINS[led][0], 0);
-    analogWrite(LED_PINS[led][1], 0);
-    analogWrite(LED_PINS[led][2], 0);
+    digitalWrite(LED_PINS[led][0], 0);
+    digitalWrite(LED_PINS[led][1], 0);
+    digitalWrite(LED_PINS[led][2], 0);
   }
 }
 
@@ -161,8 +241,8 @@ void printHelp()
   Serial.println(F("- move_backward(x): Move robot backward for x seconds, [0-100]"));
   Serial.println(F("- turn_right(x): Turn robot right x degrees, [0-360]"));
   Serial.println(F("- turn_left(x): Turn robot left x degrees, [0-360]"));
-  Serial.println(F("- set_speed(x): Set robot speed to x, [-100-100]"));
-  Serial.println(F("- set_led_color(color, led): Change an LED's color, [0-32]"));
+  Serial.println(F("- set_speed(x): Set robot speed to x, [0-255]"));
+  Serial.println(F("- set_led_color(color, led): Change an LED's color, [0-4]"));
   Serial.println(F("- make_noise(): Make a noise"));
   Serial.println(F("- print_list(): Print the list of commands for the robot"));
   Serial.println(F("- clear_list(): Clear the list of commands for the robot"));

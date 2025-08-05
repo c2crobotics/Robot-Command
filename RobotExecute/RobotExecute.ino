@@ -41,7 +41,7 @@ void setup() {
 
 void loop() {
   if (!queue.isEmpty()) {
-    // processQueue();
+    processQueue();
   }
   delay(10);
 }
@@ -56,7 +56,7 @@ void processQueue() {
     Serial.print("Executing ");
     Serial.println(cmd.name);
     executeCommand(cmd);
-    delay(1000);
+    delay(3000);
   }
   Serial.println("Processing is finished.");
 }
